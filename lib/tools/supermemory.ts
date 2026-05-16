@@ -3,7 +3,8 @@ import { Tool } from 'ai';
 import { serverEnv } from '@/env/server';
 
 export function createMemoryTools(userId: string) {
-  return supermemoryTools(serverEnv.SUPERMEMORY_API_KEY, {
+  // FIXED: Type assertion for SUPERMEMORY_API_KEY which may be string | undefined
+  return supermemoryTools(serverEnv.SUPERMEMORY_API_KEY as string, {
     containerTags: [userId],
   });
 }
