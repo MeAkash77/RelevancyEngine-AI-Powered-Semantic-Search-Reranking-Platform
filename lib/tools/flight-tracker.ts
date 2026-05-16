@@ -117,6 +117,16 @@ export const flightTrackerTool = tool({
     scheduledDepartureDate: string;
   }) => {
     console.log(`[Tracking flight]: ${carrierCode} ${flightNumber} on ${scheduledDepartureDate}`);
+    
+    // Check if required environment variables are available
+    if (!serverEnv.AMADEUS_API_KEY || !serverEnv.AMADEUS_API_SECRET) {
+      console.error('Missing Amadeus API credentials');
+      return {
+        data: [],
+        error: 'Flight tracking is not configured. Please check API credentials.',
+      };
+    }
+
     const tokenResponse = await fetch('https://api.amadeus.com/v1/security/oauth2/token', {
       method: 'POST',
       headers: {
@@ -129,10 +139,26 @@ export const flightTrackerTool = tool({
       }),
     });
 
+    if (!tokenResponse.ok) {
+      console.error('Failed to get access token:', tokenResponse.status, tokenResponse.statusText);
+      return {
+        data: [],
+        error: 'Failed to authenticate with flight tracking service',
+      };
+    }
+
     const tokenData = await tokenResponse.json();
     console.log(tokenData);
 
     const accessToken = tokenData.access_token;
+
+    if (!accessToken) {
+      console.error('No access token received');
+      return {
+        data: [],
+        error: 'Failed to obtain access token for flight tracking',
+      };
+    }
 
     try {
       const response = await fetch(
