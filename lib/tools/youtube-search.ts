@@ -523,6 +523,11 @@ export const youtubeSearchTool = tool({
     mode?: SearchMode;
     channelVideoType?: ChannelVideoType;
   }) => {
+    // FIXED: Validate Supadata API key before using it
+    if (!serverEnv.SUPADATA_API_KEY) {
+      throw new Error('SUPADATA_API_KEY is required but not configured in environment variables');
+    }
+
     try {
       const supadata = new Supadata({
         apiKey: serverEnv.SUPADATA_API_KEY,
