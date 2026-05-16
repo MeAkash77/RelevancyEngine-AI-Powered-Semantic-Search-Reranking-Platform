@@ -2,7 +2,9 @@ import { Resend } from 'resend';
 import { serverEnv } from '@/env/server';
 import SearchCompletedEmail from '@/components/emails/lookout-completed';
 
-const resend = new Resend(serverEnv.RESEND_API_KEY);
+const resend = serverEnv.RESEND_API_KEY
+  ? new Resend(serverEnv.RESEND_API_KEY)
+  : null;
 
 interface SendLookoutCompletionEmailParams {
   to: string;
@@ -18,6 +20,14 @@ export async function sendLookoutCompletionEmail({
   chatId,
 }: SendLookoutCompletionEmailParams) {
   try {
+    if (!resend) {
+      console.warn('RESEND_API_KEY is missing');
+      return {
+        success: false,
+        error: 'Missing RESEND_API_KEY',
+      };
+    }
+
     const data = await resend.emails.send({
       from: 'Scira AI <noreply@scira.ai>',
       to: [to],
@@ -30,9 +40,14 @@ export async function sendLookoutCompletionEmail({
     });
 
     console.log('✅ Lookout completion email sent successfully:', data.data?.id);
-    return { success: true, id: data.data?.id };
+
+    return {
+      success: true,
+      id: data.data?.id,
+    };
   } catch (error) {
     console.error('❌ Failed to send lookout completion email:', error);
+
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
