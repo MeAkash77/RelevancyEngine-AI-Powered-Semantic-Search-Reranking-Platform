@@ -202,11 +202,20 @@ function formatSupadataResponse(metadata: SupadataMetadata, url: string, transcr
   };
 }
 
+// FIXED: Type assertions for all API keys
+const supadata = new Supadata({
+  apiKey: serverEnv.SUPADATA_API_KEY as string,
+});
 
-const supadata = new Supadata({ apiKey: serverEnv.SUPADATA_API_KEY });
 const exa = new Exa(serverEnv.EXA_API_KEY as string);
-const parallel = new Parallel({ apiKey: serverEnv.PARALLEL_API_KEY });
-const firecrawl = new FirecrawlApp({ apiKey: serverEnv.FIRECRAWL_API_KEY });
+
+const parallel = new Parallel({
+  apiKey: serverEnv.PARALLEL_API_KEY as string,
+});
+
+const firecrawl = new FirecrawlApp({
+  apiKey: serverEnv.FIRECRAWL_API_KEY as string,
+});
 
 // Helper function to retrieve content from a single URL
 async function retrieveSingleUrl(
@@ -647,4 +656,3 @@ export const retrieveTool = tool({
     }
   },
 });
-
