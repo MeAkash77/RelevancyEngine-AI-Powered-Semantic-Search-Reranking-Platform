@@ -249,23 +249,42 @@ export const auth = betterAuth({
     },
   }),
   socialProviders: {
-    github: {
-      clientId: serverEnv.GITHUB_CLIENT_ID,
-      clientSecret: serverEnv.GITHUB_CLIENT_SECRET,
-    },
-    google: {
-      clientId: serverEnv.GOOGLE_CLIENT_ID,
-      clientSecret: serverEnv.GOOGLE_CLIENT_SECRET,
-    },
-    twitter: {
-      clientId: serverEnv.TWITTER_CLIENT_ID,
-      clientSecret: serverEnv.TWITTER_CLIENT_SECRET,
-    },
-    microsoft: {
-      clientId: process.env.MICROSOFT_CLIENT_ID as string,
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string,
-      prompt: 'select_account', // Forces account selection
-    },
+    // GitHub - only if credentials are provided
+    ...(serverEnv.GITHUB_CLIENT_ID &&
+      serverEnv.GITHUB_CLIENT_SECRET && {
+        github: {
+          clientId: serverEnv.GITHUB_CLIENT_ID,
+          clientSecret: serverEnv.GITHUB_CLIENT_SECRET,
+        },
+      }),
+
+    // Google - only if credentials are provided
+    ...(serverEnv.GOOGLE_CLIENT_ID &&
+      serverEnv.GOOGLE_CLIENT_SECRET && {
+        google: {
+          clientId: serverEnv.GOOGLE_CLIENT_ID,
+          clientSecret: serverEnv.GOOGLE_CLIENT_SECRET,
+        },
+      }),
+
+    // Twitter - only if credentials are provided
+    ...(serverEnv.TWITTER_CLIENT_ID &&
+      serverEnv.TWITTER_CLIENT_SECRET && {
+        twitter: {
+          clientId: serverEnv.TWITTER_CLIENT_ID,
+          clientSecret: serverEnv.TWITTER_CLIENT_SECRET,
+        },
+      }),
+
+    // Microsoft - only if credentials are provided
+    ...(process.env.MICROSOFT_CLIENT_ID &&
+      process.env.MICROSOFT_CLIENT_SECRET && {
+        microsoft: {
+          clientId: process.env.MICROSOFT_CLIENT_ID as string,
+          clientSecret: process.env.MICROSOFT_CLIENT_SECRET as string,
+          prompt: 'select_account', // Forces account selection
+        },
+      }),
   },
   plugins: [
     dash(),
